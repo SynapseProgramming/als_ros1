@@ -74,3 +74,27 @@ target_link_libraries(scan2pc ${catkin_LIBRARIES})
 
 add_executable(slamer src/slamer.cpp)
 target_link_libraries(slamer ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${YAMLCPP_LIBRARIES} ${PCL_LIBRARY_DIRS})
+
+
+install(
+  DIRECTORY
+    launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+install(
+  TARGETS
+    gl_pose_sampler
+    mcl
+    sm
+    mrf_failure_detector
+    classifier_dataset_generator
+    mae_classifier_learning
+    evaluator
+    scan2pc
+    slamer
+  DESTINATION
+    ${CATKIN_PACKAGE_BIN_DESTINATION}
+  LIBRARY DESTINATION
+    ${CATKIN_PACKAGE_LIB_DESTINATION}
+)
