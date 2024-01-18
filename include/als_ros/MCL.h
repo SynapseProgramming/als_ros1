@@ -144,6 +144,9 @@ private:
     // constant parameters
     const double rad2deg_;
 
+    // flip laserscan
+    bool flipScan_;
+
 public:
     // inline setting functions
     inline void setCanUpdateScan(bool canUpdateScan) {
@@ -194,6 +197,7 @@ public:
 
     MCL(void):
         nh_("~"),
+        flipScan_(false),
         scanName_("/scan"),
         odomName_("/odom"),
         mapName_("/map"),
@@ -355,6 +359,7 @@ public:
         // other parameters
         nh_.param("localization_hz", localizationHz_, localizationHz_);
         nh_.param("transform_tolerance", transformTolerance_, transformTolerance_);
+        nh_.param("flip_scan",flipScan_,flipScan_);
 
         // set subscribers
         scanSub_ = nh_.subscribe(scanName_, 10, &MCL::scanCB, this);
@@ -1439,10 +1444,24 @@ private:
     }
 
     void scanCB(const sensor_msgs::LaserScan::ConstPtr &msg) {
+
+        sensor_msgs::LaserScan scan_msg;
+        scan_msg = *msg;
+        if(flipScan_){
+
+            // invert ranges to account for flippled lidar
+            std::vector<float> ranges = msg->ranges;
+            for (int i = 0; i < (int)ranges.size(); ++i)
+            {
+                ranges[i] = msg->ranges[(int)msg->ranges.size() - 1 - i];
+            }
+            scan_msg.ranges = ranges;
+        }
         if (canUpdateScan_)
-            scan_ = *msg;
+            scan_ = scan_msg;
         if (!gotScan_)
             gotScan_ = true;
+        
     }
 
     void odomCB(const nav_msgs::Odometry::ConstPtr &msg) {

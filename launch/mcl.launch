@@ -5,6 +5,10 @@
     <!-- Node name -->
     <arg name="node_name" default="mcl" />
 
+
+    <!-- set flip_scan to true if the lidar is inverted on the robot -->
+    <arg name="flip_scan" default="true" />
+
     <!-- Input messages -->
     <arg name="scan_name" default="/scan_front" /> <!-- sensor_msgs::LaserScan -->
     <arg name="odom_name" default="/odom" /> <!-- nav_msgs::Odometry -->
@@ -135,7 +139,7 @@
 
     <!-- If use_gl_pose_sampler is true, global-localization-based pose sampler is used.
          The sampled poses are integrated to the mcl estimate via importance sampling. -->
-    <arg name="use_gl_pose_sampler" default="false" />
+    <arg name="use_gl_pose_sampler" default="true" />
 
     <!-- fuse_gl_pose_sampler_only_unreliable is true,
          the sampled pose is fused if reliability is less than 90 %.
@@ -221,6 +225,7 @@
         <arg name="map_name" value="$(arg map_name)" />
         <arg name="scan_name" value="$(arg scan_name)" />
         <arg name="odom_name" value="$(arg odom_name)" />
+        <arg name="flip_scan" value="$(arg flip_scan)" />
 
         <arg name="poses_name" value="$(arg gl_sampled_poses_name)" />
         <arg name="local_map_name" value="$(arg local_map_name)" />
@@ -248,6 +253,7 @@
         <param name="measurement_model_type" value="$(arg measurement_model_type)" type="int" />
 
         <param name="scan_name" value="$(arg scan_name)" type="string" />
+        <param name="flip_scan" value="$(arg flip_scan)" type="bool" />
         <param name="odom_name" value="$(arg odom_name)" type="string" />
         <param name="map_name" value="$(arg map_name)" type="string" />
         <param name="pose_name" value="$(arg pose_name)" type="string" />

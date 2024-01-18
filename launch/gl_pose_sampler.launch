@@ -8,6 +8,8 @@
     <arg name="scan_name" default="/scan" /> <!-- sensor_msgs::LaserScan -->
     <arg name="odom_name" default="/odom" /> <!-- nav_msgs::Odometry -->
 
+    <arg name="flip_scan" default="false" /> 
+
     <!-- Output messages -->
     <arg name="poses_name" default="/gl_sampled_poses" /> <!-- geometry_msgs::PoseArray -->
     <arg name="local_map_name" default="/gl_local_map" /> <!-- nav_msgs::OccupancyGrid -->
@@ -71,6 +73,7 @@
     <node name="$(arg node_name)" pkg="als_ros" type="gl_pose_sampler" output="log" >
         <param name="map_name" value="$(arg map_name)" type="string" />
         <param name="scan_name" value="$(arg scan_name)" type="string" />
+        <param name="flip_scan" value="$(arg flip_scan)" type="bool" />
         <param name="odom_name" value="$(arg odom_name)" type="string" />
         <param name="poses_name" value="$(arg poses_name)" type="string" />
         <param name="local_map_name" value="$(arg local_map_name)" type="string" />

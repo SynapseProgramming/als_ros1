@@ -135,9 +135,13 @@ private:
     tf::TransformBroadcaster tfBroadcaster_;
     tf::TransformListener tfListener_;
 
+    // flip laserscan
+    bool flipScan_;
+
 public:
     GLPoseSampler(void):
         nh_("~"),
+        flipScan_(false),
         mapName_("/map"),
         scanName_("/scan"),
         odomName_("/odom"),
@@ -168,6 +172,7 @@ public:
     {
         nh_.param("map_name", mapName_, mapName_);
         nh_.param("scan_name", scanName_, scanName_);
+        nh_.param("flip_scan", flipScan_, flipScan_);
         nh_.param("odom_name", odomName_, odomName_);
         nh_.param("poses_name", posesName_, posesName_);
         nh_.param("local_map_name", localMapName_, localMapName_);
@@ -763,8 +768,26 @@ private:
             return;
         }
 
+
+        sensor_msgs::LaserScan scan_msg;
+        scan_msg = *msg;
+        if(flipScan_){
+         // invert ranges to account for flippled lidar
+                std::vector<float> ranges = msg->ranges;
+                for (int i = 0; i < (int)ranges.size(); ++i)
+                {
+                    ranges[i] = msg->ranges[(int)msg->ranges.size() - 1 - i];
+                }
+              
+                scan_msg.ranges = ranges;
+        }
+
+                
+
+        
+
         if (isFirst && gotOdom_) {
-            keyScans_.push_back(*msg);
+            keyScans_.push_back(scan_msg);
             keyPoses_.push_back(odomPose_);
             prevOdomPose.setPose(odomPose_);
             isFirst = false;
@@ -781,7 +804,7 @@ private:
         while (dyaw > M_PI)
             dyaw -= 2.0 * M_PI;
         if (dl > keyScanIntervalDist_ || fabs(dyaw) > keyScanIntervalYaw_) {
-            keyScans_.insert(keyScans_.begin(), *msg);
+            keyScans_.insert(keyScans_.begin(), scan_msg);
             keyPoses_.insert(keyPoses_.begin(), odomPose_);
             if ((int)keyScans_.size() >= keyScansNum_) {
                 keyScans_.resize(keyScansNum_);
